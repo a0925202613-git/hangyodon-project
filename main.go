@@ -8,7 +8,19 @@ import (
 	_ "github.com/lib/pq" // 這是連線 PostgreSQL 必備的驅動
 )
 
-// 新增角色
+// 新增好友的函數
+func addFriend(db *sql.DB, name string, relation string) {
+	// 注意這裡的資料表名稱改成 hangyodon_friends
+	query := `INSERT INTO hangyodon_friends (friend_name, relationship) VALUES ($1, $2)`
+
+	_, err := db.Exec(query, name, relation)
+	if err != nil {
+		log.Fatal("新增好友失敗：", err)
+	}
+	fmt.Printf("👯 成功把 %s 加為漢頓的好友！\n", name)
+}
+
+// 新增角色的函數
 func addCharacter(db *sql.DB, name string, species string, personality string, dream string) {
 	query := `INSERT INTO sanrio_characters(name, species, personality, dream) VALUES ($1, $2, $3, $4)`
 
@@ -68,15 +80,19 @@ func main() {
 		log.Fatal("❌ 抓取資料失敗：", err)
 	}
 
-	//3.1 新增角色
-	addCharacter(db, "Hello Kitty", "貓", "開朗活潑而非常溫柔，偶而有一點點小迷糊", "左耳的紅色蝴蝶結")
-	addCharacter(db, "帕恰狗", "狗", "好奇心旺盛", "明明是小狗卻可以兩隻腳走路")
+	//3.1
+	// 呼叫函數新增好友
+	//addFriend(db, "金魚長輩", "導師/朋友")
+
+	// 呼叫新增角色
+	//addCharacter(db, "Hello Kitty", "貓", "開朗活潑而非常溫柔，偶而有一點點小迷糊", "左耳的紅色蝴蝶結")
+	//addCharacter(db, "帕恰狗", "狗", "好奇心旺盛", "明明是小狗卻可以兩隻腳走路")
 
 	// 呼叫刪除 (刪除 id 4)
-	deleteCharacter(db, 4, 5)
+	//deleteCharacter(db, 4)
 
 	// 呼叫修改 (修改 id 7)
-	updateCharacter(db, 7, "吃無限量的香蕉冰淇淋")
+	//updateCharacter(db, 7, "吃無限量的香蕉冰淇淋")
 
 	// 4. 印出結果
 	fmt.Println("---------------------------------------")
@@ -85,5 +101,4 @@ func main() {
 	fmt.Println("性格：", personality)
 	fmt.Println("夢想：", dream)
 	fmt.Println("---------------------------------------")
-	fmt.Println("所有角色新增完畢，快去 pgAdmin 看看吧！")
 }
